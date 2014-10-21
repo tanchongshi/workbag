@@ -1,0 +1,689 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>好车主擦神灯活动</title>
+	<meta name="description" content="中国平安" />
+	<meta name="keywords" content="中国平安" />
+	<meta content="width=640, target-densitydpi=320, user-scalable=no" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta content="telephone=no" name="format-detection" />
+	<link type="text/css" rel="stylesheet" href="./common/css/alert.css">
+	<link rel="stylesheet" href="./css/layout.css">
+	<style type="text/css">
+	html,body{overflow-x: hidden;font-family:'microsoft yahei';background-color:#FFE53C;}
+	a{text-decoration: none;cursor: pointer;}
+	a:link {color: inherit;text-decoration: inherit;}
+	a:visited {color: inherit;text-decoration: inherit;}
+	*{padding:0;,margin:0}
+	body,html,div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, 
+	textarea, p, blockquote, th, td {margin: 0;padding: 0;font-family: 'microsoft yahei';}
+	.warp{background:url(images/raffleBg.png) no-repeat;width:100%;height:1061px;}
+	.changeTxt{color:#000;font-size:26px;text-align:center;position:absolute;top:250px;left:32%;}
+	.f_c_ffe53c{color:#ffe53c;}
+
+	/* play*/
+	.starGame{position:absolute;top:370px;width:100%;height:250px;}
+	.gray{background:#000;opacity:.3;width:70%;height:250px;margin:0 auto;z-index:9;position:absolute;left: 15%;}
+	.startBtn{background:#ffe53c;border-radius:10px;color:#ff3036!important;text-align:center;width:30%;height:53px;line-height:53px;display:block;border:1px solid #ce2d04;margin:0 auto;font-size:28px;z-index:199;position:absolute;top: 38%;left: 35%;opacity:.7;}
+	.startBtn.on{
+		opacity:1.0;background:#ffe53c;
+	}
+
+	.playGame{position:absolute;top:370px;width:100%;height:250px;}
+	.startContainer{border-radius:10px;width:40%;height:100px;line-height:53px;display:block;z-index:98;position:absolute;left: 19%;}
+	#center{ 
+		margin:50px auto; width:400px;
+	} 
+	#loading{ 
+		width:397px; height:49px; background:url(images/bak.png) no-repeat; position: absolute;top: 240px;
+	} 
+	#loading div{ 
+		width:0px; height:48px; background:url(images/pro.png) no-repeat; color:#fff; text-align:center; 
+		font-family:Tahoma; font-size:18px; 
+		line-height:48px; 
+	} 
+	#message{ 
+		width:200px; height:35px; font-family:Tahoma; font-size:12px; background-color:#d8e7f0; 
+		border:1px solid #187CBE; display:none; line-height:35px; text-align:center; margin-bottom:10px; margin-left:50px; 
+	}	
+	#pic{
+		position: absolute;z-index: 199;display: none;
+	}
+	.bigImg {
+		position: absolute;left: 19%;
+		width: 376px;
+		height: 245px;
+		
+	}
+
+	/* result*/
+	.person{position:absolute;top:310px;width:100%;display: none;}
+	.sad{background:url(images/nomoney.png) no-repeat;width:186px;height:288px;position: absolute;left: 20%;}
+	.happy{background:url(images/money.png) no-repeat;width:252px;height:288px;position: absolute;left: 14%;}
+	.Tips2{position:absolute;right:5%;top: -28px;background: url(images/txtBg.png) no-repeat;
+		   width: 289px;height: 140px;padding-top: 30px;padding-left: 16px;}
+	.Tips2 p{color:#000;text-align:center;}
+	.Tips2.sadt{padding-top: 30px;}
+	.f20{font-size:18px}
+	.f20.on {margin-top: 15px;}
+	.f18{font-size:17px}
+	.smallStar{position: absolute;right: 12%;top:160px;}
+
+	.againBtn{background:#ffe53c;border-radius:5px;color:#f00!important;text-align:center;width:50%;height:34px;line-height:34px;display:block;margin:5px auto;font-size:20px;z-index:99;font-weight:bold;}
+	</style>
+</head>
+<body>
+	<div class="warp">
+		<p class="changeTxt">你有<span class="f_c_ffe53c" id="chance">0</span>次擦拭的机会</p>	
+
+		<div class="person" id="win"></div>
+
+		<div id="playGame"></div>	
+
+		<div class="starGame" id="starGame">
+			<div class="gray"></div>
+			<img class = "bigImg" src = "images/big.png">
+			<a class="startBtn" href="#" id="startBtn">活动未开始</a>
+		</div>	
+
+	</div>	
+	<script type="text/javascript" src = "./common/js/zepto.min.js"></script>
+	<script type="text/javascript" src="./common/js/config.js"></script>
+	<script type="text/javascript" src="./common/js/shadowLayer.js"> </script>
+	<script type="text/javascript" src="./common/js/alert.js"> </script> 
+	<script type="text/javascript">
+
+	(function() {
+	    var lastTime = 0;
+	    var vendors = ['webkit', 'moz'];
+	    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+	        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+	        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||    // Webkit中此取消方法的名字变了
+	                                      window[vendors[x] + 'CancelRequestAnimationFrame'];
+	    }
+
+	    if (!window.requestAnimationFrame) {
+	        window.requestAnimationFrame = function(callback, element) {
+	            var currTime = new Date().getTime();
+	            var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+	            var id = window.setTimeout(function() {
+	                callback(currTime + timeToCall);
+	            }, timeToCall);
+	            lastTime = currTime + timeToCall;
+	            return id;
+	        };
+	    }
+	    if (!window.cancelAnimationFrame) {
+	        window.cancelAnimationFrame = function(id) {
+	            clearTimeout(id);
+	        };
+	    }
+	}());
+	
+	var recordId;//奖品id
+    
+    /**
+     * 获取请求头
+   	 */
+	var getData = function(){
+		return {
+            "aopsID": App.getParams('aopsID'),
+            "token": App.getParams('token')
+        };
+	}
+	
+	
+    /**
+     * 提供给移动端调用 返回分享url
+     */
+    function shareAwardPage(){
+    	var url = App.getRootPath()+'/activity/redpacket/share.html';
+    	var cnum = -1;
+    	try{
+        	cnum = parseInt($('#chance').text());
+    	}
+    	catch(e){
+    		//转换失败
+    	}
+    	
+    	if(-1 == cnum){
+    		new App.Alert('还没有抽奖呢！');
+    		return;
+    	}
+    	
+    	if(!recordId){
+    		new App.Alert('还没有抽奖呢！');
+    		return;
+    	}
+    	
+    	url += '?'+'aopsID='+App.getParams('aopsID')+'&token='+App.getParams('token')+'&recordId='+recordId+'&attendNum='+cnum;
+    	
+    	
+    	if (App.IS_IOS == true) {
+             window.location = 'native://shareController.shareURL('+url+')';
+	    } else {
+	    	try{
+	         	window.wst.shareURL(url);
+	    	}
+	     	catch(e){
+	    		//console.log('window.wst.shareURL(url) 异常: ' + e);
+	    	}
+	    }
+
+    }
+    
+    /**
+     * 全局变量
+     */
+	var 
+	starGameCtObj,	//starGame容器	
+	jindu=0,//进度
+	$startBtn, //开始点击按钮
+	$chance, //剩余机会
+	chanceNumber = 0, 
+	failNunber = 0, //失败次数
+	resultTips = ["太可惜了,竟然与红包擦肩而过", "太可惜了你长的太帅,红包被你亮瞎眼了",
+	"还不中啊,换个姿势擦吧", "人生最重要的两个字是坚持,继续擦吧"], //失败结果提示	
+	starImg1,starImg2,starImg3,starImg4,starImg5,starImg6, //星星	
+	box1,box2,box3,box4,box5,box6, //星星坐标
+	c,ct, //canvas canvas.context
+	clever,box7; //神灯
+
+	//主函数入口
+	Zepto(function($){
+		
+		starGameCtObj = $("#starGame");
+		$startBtn = $("#startBtn");
+		$chance = $("#chance");
+		//loadInitFun();
+		ew();
+
+	})	
+ 	
+
+	//初始化参数
+	function initConfig() {
+		jindu = 0;
+	}
+
+
+	//clickPlay
+	function clickPlay() {
+		var playObj = $(
+			'<div class="playGame"> '+	
+			'<div id="canvas" class="startContainer"></div>'+
+			'<img class = "bigImg" src = "images/big.png" />'+
+		    '<div class="progressc"><div class="progress">'+
+		     '<span id = "pro-orang" class="orange" style="width: 0%;"><span></span></span>'+
+		    '</div></center>'+		
+			'</div>');			
+		$("#playGame").append(playObj);
+		playGame();
+	}
+
+
+	//进度条
+	function setProgress(progress) {
+		//console.log(progress);
+		if(progress){
+			$("#pro-orang").css("width", String(progress) + '%'); //控制#loading div宽度 
+			//$("#pro-orang span").html(String(progress) + "%"); //显示百分比 
+		}
+	}
+
+
+	//开始游戏
+	function playGame() { 
+
+		/**判断浏览器是否支持canvas**/
+		window.onload = function(){
+			try{
+				document.createElement('canvas').getContext('2d');
+			}catch(e){
+				var addDiv = document.createElement('div');
+				alert('您的手机不支持刮刮卡效果哦~!');
+			}
+		};
+
+		//初始化星星和参数；
+		initStarFun ();
+
+	    //开始渲染
+	    var container = document.getElementById('canvas');
+	    //console.log(container);
+	    init(container, 376, 245, '#696868');
+	}	
+
+
+	//生成canvas
+	function createCanvas(parent, width, height) {
+		var canvas = {};
+		canvas.node = document.createElement('canvas');
+		canvas.context = canvas.node.getContext('2d');
+		canvas.node.width = width || 100;
+		canvas.node.height = height || 100;
+		parent.appendChild(canvas.node);
+		//初始化canvas canvas.context
+		c = canvas.node;
+		ct = canvas.context;
+		return canvas;
+	}
+
+	//初始化
+	function init(container, width, height, fillColor) {
+		var canvas = createCanvas(container, width, height);
+
+		draw();
+        canvas.node.addEventListener("touchstart", function(e){
+        	e.preventDefault();
+        	//滚动条内容显示
+        	$("#pro-orang").addClass("on");
+        	canvas.isDrawing = true;
+        },false);
+
+        canvas.node.addEventListener("touchend", function(e){
+        	e.preventDefault();
+        	canvas.isDrawing = false;
+        }, false);
+
+        var flage = false;
+        canvas.node.addEventListener("touchmove", function(e){
+        	e.preventDefault();
+        	if(flage){
+        		return;
+        	}
+
+        	//星星动态效果
+        	starMove(e);
+
+        	var touchX = e.changedTouches[0].pageX,
+        		touchY = e.changedTouches[0].pageY;
+        		//offObj = getPoint(this);
+        		offObj = $(this).offset();	//获得canvas相对页面x和y
+        		offLeft = offObj.left;
+        		offTop = offObj.top;
+        	//限定canvas范围
+        	//touchX<offLeft + 0.3*(this.width)
+        	if(touchX<offLeft || (offLeft + this.width)<touchX ||
+        	 touchY<offTop || (offTop + this.width)<touchY){
+        		return;
+        	}
+
+        	if (!canvas.isDrawing) {
+        		return;
+        	}
+        	jindu += 2;
+        	if (jindu >= 100) { 
+        		flage = true;
+        		setProgress(jindu);
+        		judGame();
+        		return; 
+        	} 
+        	else{
+        		//执行进度条
+        		setProgress(jindu);
+        	}
+	    },false);
+
+	}	
+
+
+	//赢得游戏
+	function winGame(data) {
+		//隐藏playganme
+		$("#playGame").empty();
+		//var cnum = parseInt($chance.text())-1;//机会减少一次
+		chanceNumber -= 1;
+		failNunber += 1;
+		
+        winObj = '<div class="happy"></div>'+
+        '<div class="Tips2">';
+        if(0 < chanceNumber){
+                 winObj += '<p class="f20">人品大爆发！恭喜您</p>';
+        }else {
+                 winObj += '<p class="f20 on">人品大爆发！恭喜您</p>';
+        }                           
+                 
+        winObj +='<p class="f18" id = "winResult">中了……</p>';
+			
+		if(0 < chanceNumber){
+			winObj += '<a href="#" id = "againBtn" class="againBtn">再玩一次</a>';
+		}
+		winObj += '</div><img src = "images/smallStar.png" class ="smallStar">';		
+		
+		$chance.html(chanceNumber); 			
+		var winCt =  $("#win")
+		winCt.append(winObj);			
+		$("#winResult").html("中了价值" + data.resultInfo.awardName + "的万里通红包！"); //中奖产品
+		//保存奖品id
+		recordId = data.resultInfo.recordId;
+		
+		winCt.show();
+		//再玩一次
+		$("#againBtn").click(function(e) {
+			if($(e.target).attr('id') != 'againBtn') {
+				return;
+			}
+			winCt.empty();
+			initConfig();
+			//starGameCtObj.show();
+			clickPlay();
+		});		
+		
+		//测试分享回调路经
+		//console.log(shareAwardPage());
+	}
+
+	//fail
+	function failGame(data) {
+		//隐藏playganme
+		$("#playGame").empty();
+		chanceNumber -= 1; //机会减少一次
+		failNunber += 1;
+
+		winObj = '<div class="sad"></div>'+
+					'<div class="Tips2 sadt">';
+
+		var randStr;
+		if(failNunber >= 3) {
+			randStr = resultTips[Math.floor(Math.random()*2)];
+		} else {
+			randStr = resultTips[Math.floor(Math.random()*4)];
+		}
+		
+
+		var	rdex = randStr.indexOf(","),
+			randStr1 = randStr.substring(0, rdex),
+			randStr2 = randStr.substring(rdex+1);
+
+        if(0 < chanceNumber) {
+            winObj += '<p class="f20">'+ randStr1 +'</p>';
+        } else {
+                winObj += '<p class="f20 on">'+ randStr1 +'</p>';
+        }                 
+        winObj += '<p class="f18">' +randStr2+ '</p>';
+		if(0 < chanceNumber) {
+			winObj += '<a href="#" id = "againBtn" class="againBtn">再试一次</a></div>';
+		}				
+		winObj += '<img src = "images/smallStar.png" class ="smallStar">';
+	
+		$chance.html(chanceNumber); //机会减少一次
+		var winCt =  $("#win")
+		winCt.append(winObj);
+		winCt.show();
+		//再玩一次
+		$("#againBtn").click(function(e) {
+			if($(e.target).attr('id') != 'againBtn') {
+				return;
+			}				
+			winCt.empty();
+			initConfig();
+			//starGameCtObj.show();
+			clickPlay();
+		});
+	}
+
+	//ajax100%
+	function judGame() {
+		var data = {
+		    "resultMsg": "操作成功",
+		    "resultCode": "20800",
+		    'isWin': 'Y',                  //Y 中奖   N 不中奖        
+		    "resultInfo": {
+		         awardId:   234,
+		        awardName:   "劳斯莱斯一辆"
+		    }
+		}
+		if(Math.floor(Math.random()*2) == 0){
+			failGame(data);
+		}else {
+			winGame(data);
+		}
+		
+		return;
+
+		$.ajax({
+			url : App.getRootPath() + "/do/app/activity/redpacket/getRedPacketAwardInfo.json",
+			data: getData(),
+			type : 'post',
+			dataType : 'json',
+			success : function(data) {
+				switch(data.resultCode){
+				case '20800':
+					if(data.isWin == 'Y') {
+						winGame(data);
+					} else {
+						failGame(data);
+					}
+					break;
+				case '20840':
+					new App.Alert('您尚未登陆呢！');
+					break;
+				case '20841':
+					new App.Alert('参数异常');
+					break;
+				case '20842':
+					new App.Alert('业务异常');
+					break;
+				default:
+					new App.Alert('未知错误, 错误码: ' + data.resultCode);
+				}
+			},
+			error : function() {
+			}
+		});			
+	}
+
+	//loadinit
+	function loadInitFun() {
+		new App.Alert('=!=进入初始化方法');
+		$.ajax({
+			url : App.getRootPath() + "/do/app/activity/redpacket/getRedPacketInfo.json",
+			data: getData(),
+			type : 'post',
+			dataType : 'json',
+			success : function(data) {
+				switch(data.resultCode){
+				case '20800':
+					if(data.resultInfo.status == 0){
+
+					}else if(data.resultInfo.status == 1) {
+						if(data.resultInfo.surplusChance>0){ //如果有机会
+							$startBtn.html("=!=点击开始");
+							$startBtn.addClass("on");
+							new App.Alert('=!=点击 on');
+							chanceNumber = parseInt(data.resultInfo.surplusChance);	
+							new App.Alert('=!=parseInt num');
+							//$('#chance').text(data.resultInfo.surplusChance);
+							$chance.html(data.resultInfo.surplusChance);
+							new App.Alert('=!=$chance.html');
+							$("#starGame").click(function() {
+								new App.Alert('=!=click 点击开始事件');
+								starGameCtObj.hide();
+								new App.Alert('=!=click 隐藏开始层');
+								clickPlay();									
+							});
+						}else { //没有机会
+							$startBtn.html("机会已使用完");
+							//$startBtn.addClass("on");
+						}							
+					}else {
+						//活动结束
+						startBtn.html("活动已结束");
+					}
+					break;
+				case '20840':
+					new App.Alert('您尚未登陆呢！');
+					break;
+				case '20841':
+					new App.Alert('参数异常');
+					break;
+				case '20842':
+					new App.Alert('业务异常');
+					break;
+				default:
+					new App.Alert('未知错误, 错误码: ' + data.resultCode);
+				}
+				
+			},
+			error : function(data) {
+				//console.log(data);
+			}
+		});	
+	}
+
+	//获取某元素以浏览器左上角为原点的坐标
+	function getPoint(obj) { 
+	    var t = obj.offsetTop; //获取该元素对应父容器的上边距
+	    var l = obj.offsetLeft; //对应父容器的上边距
+	    //判断是否有父容器，如果存在则累加其边距
+	    while (obj = obj.offsetParent) {//等效 obj = obj.offsetParent;while (obj != undefined)
+	        t += obj.offsetTop; //叠加父容器的上边距
+	        l += obj.offsetLeft; //叠加父容器的左边距
+	    }
+	    return {
+	    	top: t,
+	    	left: l
+	    }
+	}
+
+	//初始化星星和坐标 initStarFun
+	function initStarFun () {
+		//画神灯
+		// clever = new Image();
+		// clever.src = "images/big.png";
+
+		starImg1 = new Image();
+		starImg1.src = "images/star-01.png";
+		starImg2 = new Image();
+		starImg2.src = "images/star-02.png";
+		starImg3 = new Image();
+		starImg3.src = "images/star-03.png";
+		starImg4 = new Image();
+		starImg4.src = "images/star-04.png";
+		// starImg5 = new Image();
+		// starImg5.src = "images/star-05.png";
+		// starImg6 = new Image();
+		// starImg6.src = "images/star-06.png";						
+
+		var temp = 1000;
+		box1 = {
+			x: temp,
+			y: temp
+		}
+		box2 = {
+			x: temp,
+			y: temp
+		}
+		box3 = {
+			x: temp,
+			y: temp
+		}
+		box4 = {
+			x: temp,
+			y: temp
+		}
+		box5 = {
+			x: temp,
+			y: temp
+		}
+		// box6 = {
+		// 	x: temp,
+		// 	y: temp
+		// }
+		// box7 = {
+		// 	x: 0,
+		// 	y: 0				
+		// }						
+	}
+
+	//画星星
+	function draw() {
+		ct.clearRect(0, 0, c.width, c.height);
+		//画神灯	
+		ct.save();   	
+		//ct.drawImage(clever, box7.x, box7.y, 376, 245);
+
+		ct.drawImage(starImg1, box1.x, box1.y);
+		ct.drawImage(starImg2, box2.x, box2.y);
+		ct.drawImage(starImg3, box3.x, box3.y);
+		ct.drawImage(starImg4, box4.x, box4.y);
+		// ct.drawImage(starImg5, box5.x, box5.y);
+		// ct.drawImage(starImg6, box6.x, box6.y);	
+		ct.restore();   		
+		requestAnimationFrame(draw);
+	}
+
+	//星星动态效果
+	var mpX = null,mpY = null;
+	function starMove(e) {
+		// var etX = e.changedTouches[0].pageX,
+		// ety = e.changedTouches[0].pageY,
+		// ex = 0,ey = 0;
+		// if(mpX == null) {
+		// 	mpX = etX;
+		// } else {
+		// 	if(mpX<etX){
+		// 		ex = 1
+		// 	}else {
+		// 		ex = -1;
+		// 	}
+		// 	mpX = etX;
+		// }
+
+		// if(mpY == null) {
+		// 	mpY = ety;
+		// } else {
+		// 	if(mpY<ety){
+		// 		ey = 1
+		// 	}else {
+		// 		ey = -1;
+		// 	}
+		// 	mpY = ety;
+		// }			
+
+		
+		//console.log(e.touches[0].pageY);
+		// var w = parseInt(c.width) - 100,
+		// 	h = parseInt(c.height) - 100;
+		//效果集中
+		var w = 150,
+			h = 150,
+			wetx = 110
+			wety = 40;		
+		//神灯效果
+		// box7.x = ex;
+		// box7.y = ey;			
+			
+		box1.x = Math.floor((Math.random()*w)+wetx);
+		box1.y = Math.floor((Math.random()*h)+wety);
+		box2.x = Math.floor((Math.random()*w)+wetx);
+		box2.y = Math.floor((Math.random()*h)+wety);		
+		box3.x = Math.floor((Math.random()*w)+wetx);
+		box3.y = Math.floor((Math.random()*h)+wety);	
+		box4.x = Math.floor((Math.random()*w)+wetx);
+		box4.y = Math.floor((Math.random()*h)+wety);
+		// box5.x = Math.floor((Math.random()*w)+wetx);
+		// box5.y = Math.floor((Math.random()*h)+wety);
+		// box6.x = Math.floor((Math.random()*w)+wetx);
+		// box6.y = Math.floor((Math.random()*h)+wety);						
+	}				
+
+	//test
+	function ew() {
+			$startBtn.html("点击开始");
+			$startBtn.addClass("on");
+			$("#chance").html("300");
+			chanceNumber = 300;
+			$("#starGame").click(function() {
+				starGameCtObj.hide();
+				clickPlay();									
+			});			
+	}
+
+
+	</script>
+</body>
+</html>
