@@ -1,0 +1,20 @@
+<meta name="viewport" content="target-densitydpi=320, width=640px, user-scalable=no">
+<script type="text/javascript">
+	//屏幕自适应
+	function greenInit() {
+	    var DEFAULT_WIDTH = 640, // 页面的默认宽度
+	        ua = navigator.userAgent.toLowerCase(), // 根据 user agent 的信息获取浏览器信息
+	        deviceWidth = window.screen.width, // 设备的宽度
+	        devicePixelRatio = window.devicePixelRatio || 1, // 物理像素和设备独立像素的比例，默认为1
+	        targetDensitydpi;
+	        
+	        if(ua.indexOf("iphone") !== -1) {
+	        	targetDensitydpi = DEFAULT_WIDTH / deviceWidth * devicePixelRatio * 160;
+	        } else {
+	        	targetDensitydpi = DEFAULT_WIDTH / deviceWidth * devicePixelRatio * 160 -1;
+	        }
+	        $('meta[name="viewport"]').attr('content', 'target-densitydpi=' + targetDensitydpi +
+	                ', width=640px, user-scalable=no');
+	                
+	}	
+</script>
